@@ -1,0 +1,7 @@
+.idea
+venv
+logs
+testing
+plan.md
+__pycache__
+*.pickle

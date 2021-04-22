@@ -9,7 +9,7 @@ from pycron.interval.hours import Hours
 from pycron.interval.interval import Interval
 from pycron.interval.minutes import Minutes
 from pycron.interval.weeks import Weeks
-from settings import RELATIVE_JOB_FOLER, JOB_FAIL_TIMEOUT_PERIOD_MINUTES
+from pycron.settings import RELATIVE_JOB_FOLDER, JOB_FAIL_TIMEOUT_PERIOD_MINUTES
 
 
 class InvalidJobException(Exception):
@@ -70,7 +70,7 @@ class Job:
         # Absolute path to script
         self.script_path = script_path
         # Truncated path relative to job folder
-        self.relative_name = script_path.relative_to(RELATIVE_JOB_FOLER)
+        self.relative_name = script_path.relative_to(RELATIVE_JOB_FOLDER)
 
         self.job_uuid = uuid4()
 

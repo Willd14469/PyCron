@@ -1,9 +1,9 @@
 import unittest
 from pathlib import Path
-from typing import Dict, List
+from typing import List
 
 from pycron.jobs.jobs import Job
-from settings import RELATIVE_JOB_FOLER
+from pycron.settings import RELATIVE_JOB_FOLDER
 
 
 class TestJobs(unittest.TestCase):
@@ -12,7 +12,7 @@ class TestJobs(unittest.TestCase):
         self.created_jobs_files: List[Path] = []  # Maintain list of files to purge after tests
 
         print(f'setting up')
-        self.jobs_folder = RELATIVE_JOB_FOLER
+        self.jobs_folder = RELATIVE_JOB_FOLDER
 
     def tearDown(self) -> None:
         self._purge_files()

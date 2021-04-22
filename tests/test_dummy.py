@@ -1,15 +1,15 @@
 import unittest
 
-from pycron.job_discovery.folder_name import JobFolderScanner
-from pycron.persistance.dummy import MemStore
-from settings import RELATIVE_JOB_FOLER
+from pycron.job_discovery.folder_discovery import JobFolderScanner
+from pycron.persistance.pickle_persistence import MemStore
+from pycron.settings import RELATIVE_JOB_FOLDER
 
 
 class TestJobs(unittest.TestCase):
 
     def test_persistence(self):
         store = MemStore()
-        discovery = JobFolderScanner(RELATIVE_JOB_FOLER, store)
+        discovery = JobFolderScanner(RELATIVE_JOB_FOLDER, store)
 
         discovery.run_discovery()
 

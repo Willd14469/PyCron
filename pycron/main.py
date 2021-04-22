@@ -27,18 +27,18 @@ class MainThread:
             raise NotADirectoryError(f'{self.jobs_folder} is not a directory!')
 
     def startup_status(self):
-        self.main_log.info(f'--- DAEMON settings ---')
-        self.main_log.info(f'Job folder -> {self.jobs_folder}')
+        self.main_log.info(f'--- Main settings ---')
+        self.main_log.info(f'Job folder         -> {self.jobs_folder}')
         self.main_log.info(f'Job check interval -> {self.job_check_interval} seconds')
 
-    def test(self):
-        self.executor.test_loop()
+    def run(self):
+        self.executor.loop()
 
 
 if __name__ == '__main__':
     try:
         main_thread = MainThread()
         main_thread.startup_status()
-        main_thread.test()
+        main_thread.run()
     except Exception as excp:
         LOG.exception(excp.args)

@@ -6,10 +6,10 @@ from time import sleep
 
 from rich.logging import RichHandler
 
-from pycron.job_discovery.folder_name import JobFolderScanner
+from pycron.job_discovery.folder_discovery import JobFolderScanner
 from pycron.jobs.jobs import Job
-from pycron.persistance.dummy import MemStore
-from settings import LOG, SLEEP_DURATION, RELATIVE_LOGS_FOLDER
+from pycron.persistance.pickle_persistence import MemStore
+from pycron.settings import LOG, SLEEP_DURATION, RELATIVE_LOGS_FOLDER, LOGGING_LEVEL
 
 
 class FolderExecutor:
@@ -17,6 +17,8 @@ class FolderExecutor:
     Serves as base class executor for pycron
 
     Purpose: Execute jobs when needed
+
+            Coordinates with the store and the job discovery as well
     """
 
     def __init__(self, jobs_folder: Path, persistance_module):
@@ -27,7 +29,7 @@ class FolderExecutor:
         self.store_lock = Lock()
 
         logging.basicConfig(
-            level="NOTSET",
+            level=LOGGING_LEVEL,
             format="%(message)s",
             datefmt="[%X]",
             handlers=[RichHandler(rich_tracebacks=True)]
@@ -43,13 +45,10 @@ class FolderExecutor:
             logging.Formatter('%(asctime)s - %(levelname)s - %(message)s \n'))
         LOG.addHandler(file_handler)
 
-    def test_loop(self, duration=600):
-        for _ in range(duration):
+    def loop(self):
+        while True:
             runnables = self.store.runnable()
 
-            # Run scripts
-            # for runnable in runnables:
-            #     self.execute_job(runnable)
             self.parallel_job_runner(runnables)
 
             print(self.store.next_runnable())

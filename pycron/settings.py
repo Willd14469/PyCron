@@ -1,9 +1,12 @@
 import logging
 from pathlib import Path
 
-from rich.logging import RichHandler
+"""
+    All modular settings available to pycron
+"""
 
 LOG = logging.getLogger("main_log")
+LOGGING_LEVEL = 'NOTSET'
 
 SLEEP_DURATION = 1  # sleep duration between checking if a jobs needs to execute
 
@@ -15,9 +18,9 @@ JOBS_FOLDER = './testing'  # read and write
 
 LOGS_FOLDER = './logs'
 
-PERSISTANCE_FILE = Path(__file__).parent / 'persistance.pickle'
+PERSISTANCE_FILE = Path(__file__).parent.parent / 'persistance.pickle'
 
 EXECUTOR_JOB_MANIFEST = 'executor_manifest'  # must be read and writable
 
-RELATIVE_JOB_FOLER = Path(__file__).parent / JOBS_FOLDER
-RELATIVE_LOGS_FOLDER = Path(__file__).parent / LOGS_FOLDER
+RELATIVE_JOB_FOLDER = Path(__file__).parent.parent / JOBS_FOLDER
+RELATIVE_LOGS_FOLDER = Path(__file__).parent.parent / LOGS_FOLDER

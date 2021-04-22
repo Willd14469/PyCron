@@ -3,8 +3,8 @@ from pathlib import Path
 
 from pycron.interval.minutes import Minutes
 from pycron.jobs.jobs import InvalidJobException
-from pycron.persistance.dummy import MemStore
-from settings import LOG, CHECK_FOR_NEW_JOBS_EVERY
+from pycron.persistance.pickle_persistence import MemStore
+from pycron.settings import LOG, CHECK_FOR_NEW_JOBS_EVERY
 
 
 class JobFolderScanner:

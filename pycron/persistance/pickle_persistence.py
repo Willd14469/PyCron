@@ -5,7 +5,7 @@ import subprocess
 from threading import Thread
 
 from pycron.jobs.jobs import Job
-from settings import LOG, PERSISTANCE_FILE
+from pycron.settings import LOG, PERSISTANCE_FILE
 
 
 class MemStore:

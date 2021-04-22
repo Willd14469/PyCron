@@ -3,7 +3,8 @@ from setuptools import setup
 setup(
     name='pycron',
     version='0.1.0',
-    packages=['pycron'],
+    packages=['pycron', 'pycron.executor', 'pycron.interval', 'pycron.job_discovery', 'pycron.persistance',
+              'pycron.jobs'],
     url='',
     license='',
     author='Will Derriman',

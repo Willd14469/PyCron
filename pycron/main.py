@@ -1,44 +1,42 @@
+import argparse
+import os
 from pathlib import Path
 
-from pycron.executor.folder_executor import FolderExecutor
-from settings import LOG, SLEEP_DURATION, JOBS_FOLDER
+from pycron import settings
 
 
-class MainThread:
-    MIN_SLEEP_DURATION = 0.5
-    MAX_SLEEP_DURATION = 1800
+from pycron.coordinator import MainThread
 
-    def __init__(self):
-        self.job_check_interval = SLEEP_DURATION
-        self.jobs_folder = Path(JOBS_FOLDER).absolute()
 
-        self.param_validation()
-
-        self.executor: FolderExecutor = FolderExecutor(self.jobs_folder, None)
-
-        self.main_log = LOG
-
-    def param_validation(self):
-        if not self.MIN_SLEEP_DURATION < self.job_check_interval < self.MAX_SLEEP_DURATION:
-            raise AttributeError(
-                f'Invalid sleep duration {self.job_check_interval}; must be between {self.MIN_SLEEP_DURATION} and {self.MAX_SLEEP_DURATION}')
-
-        if not self.jobs_folder.is_dir():
-            raise NotADirectoryError(f'{self.jobs_folder} is not a directory!')
-
-    def startup_status(self):
-        self.main_log.info(f'--- Main settings ---')
-        self.main_log.info(f'Job folder         -> {self.jobs_folder}')
-        self.main_log.info(f'Job check interval -> {self.job_check_interval} seconds')
-
-    def run(self):
-        self.executor.loop()
+def relative_to_absolute(path: str) -> Path:
+    return Path(path).absolute()
 
 
 if __name__ == '__main__':
-    try:
-        main_thread = MainThread()
-        main_thread.startup_status()
-        main_thread.run()
-    except Exception as excp:
-        LOG.exception(excp.args)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--nuke', action='store_true')
+    parser.add_argument('-t', '--target', action='store', help='Jobs folder to target')
+    parser.add_argument('-l', '--log-folder', action='store', help='Log folder to target')
+    parser.add_argument('-c', '--config-file', action='store', help='Config file to target')
+
+    args = vars(parser.parse_args())
+    print(args)
+
+    if args['config_file']:
+        settings.reload_config_from_file(args['config_file'])
+
+    if args['target']:
+        absolute_path = relative_to_absolute(args['target'])
+        settings.set_job_folder(absolute_path)
+
+    if args['log_folder']:
+        absolute_path = relative_to_absolute(args['log_folder'])
+        settings.set_logs_folder(absolute_path)
+
+    settings.summaries_settings()
+
+    # try:
+    main_thread = MainThread(args['nuke'])
+    main_thread.run()
+    # except Exception as excp:
+    #     LOG.exception(excp.args)

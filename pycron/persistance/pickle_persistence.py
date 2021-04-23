@@ -4,26 +4,22 @@ import pickle
 import subprocess
 from threading import Thread
 
+from pycron import settings
 from pycron.jobs.jobs import Job
-from pycron.settings import LOG, PERSISTANCE_FILE
 
 
 class MemStore:
     """
     Serves as a persistant store of job status data
 
-    Dummy is a memory only version primarily for testing.
+    Uses pickle to save the data to a file each time a job status method is called
     """
 
     JOB_FAILED = 45
     JOB_SUCCEEDED = 40
 
-    def __init__(self):
-        self.store = self.deserialize_store()
-
-        # # self.store = {}
-        #
-        # self.persistance_file = open(PERSISTANCE_FILE, 'w')
+    def __init__(self, nuke_persistence=False):
+        self.store = self.deserialize_store(nuke_persistence)
 
     def fetch(self, script_path):
         if script_path in self.store:
@@ -77,9 +73,9 @@ class MemStore:
             'runtime': job.runtime
         }
         if failed:
-            LOG.log(self.JOB_FAILED, json.dumps(job_status, indent=True))
+            settings.LOG.log(self.JOB_FAILED, json.dumps(job_status, indent=True))
         else:
-            LOG.log(self.JOB_SUCCEEDED, json.dumps(job_status, indent=True))
+            settings.LOG.log(self.JOB_SUCCEEDED, json.dumps(job_status, indent=True))
 
     def next_runnable(self):
         """Debug feature to get the next runtime in minutes for each job"""
@@ -93,21 +89,28 @@ class MemStore:
 
         TODO make this a singleton thread and send the store to the thread for each write instead of spawning a new thread for each job result
         """
-        LOG.info('Writing store to file...')
+        settings.LOG.info('Writing store to file...')
         write_thread = Thread(target=self.serialize_store, args=[self.store], name=f'log_writer')
         write_thread.start()
         write_thread.join()
-        LOG.info('Finished storing.')
+        settings.LOG.info('Finished storing.')
 
-    def serialize_store(self, store):
-        with open(PERSISTANCE_FILE, 'wb') as cache:
+    @staticmethod
+    def serialize_store(store):
+        with open(settings.PERSISTENCE_FILE, 'wb') as cache:
             pickle.dump(store, cache)
 
-    def deserialize_store(self) -> dict:
-        if not PERSISTANCE_FILE.is_file():
+    @staticmethod
+    def deserialize_store(nuke_persistence) -> dict:
+
+        if nuke_persistence:
+            settings.LOG.warning('Deleting persistence file, starting fresh')
+            settings.PERSISTENCE_FILE.unlink()  # Delete persistence file to start fresh
+
+        if not settings.PERSISTENCE_FILE.is_file():
             return {}
-        with open(PERSISTANCE_FILE, 'rb') as cache:
-            LOG.info('Loading previous state from file...')
+        with open(settings.PERSISTENCE_FILE, 'rb') as cache:
+            settings.LOG.info('Loading previous state from file...')
             store = pickle.load(cache)
             for job in store.values():
                 job.unlock()

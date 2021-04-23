@@ -6,10 +6,11 @@ from time import sleep
 
 from rich.logging import RichHandler
 
+from pycron import settings
 from pycron.job_discovery.folder_discovery import JobFolderScanner
 from pycron.jobs.jobs import Job
 from pycron.persistance.pickle_persistence import MemStore
-from pycron.settings import LOG, SLEEP_DURATION, RELATIVE_LOGS_FOLDER, LOGGING_LEVEL
+# from pycron.settings import LOG, SLEEP_DURATION, RELATIVE_LOGS_FOLDER, LOGGING_LEVEL
 
 
 class FolderExecutor:
@@ -21,15 +22,15 @@ class FolderExecutor:
             Coordinates with the store and the job discovery as well
     """
 
-    def __init__(self, jobs_folder: Path, persistance_module):
+    def __init__(self, jobs_folder: Path, nuke_persistence):
 
-        self.store = MemStore()
+        self.store = MemStore(nuke_persistence)
         self.job_parser = JobFolderScanner(jobs_folder, self.store)
 
         self.store_lock = Lock()
 
         logging.basicConfig(
-            level=LOGGING_LEVEL,
+            level=settings.LOG_LEVEL,
             format="%(message)s",
             datefmt="[%X]",
             handlers=[RichHandler(rich_tracebacks=True)]
@@ -38,12 +39,12 @@ class FolderExecutor:
         logging.addLevelName(self.store.JOB_FAILED, 'JOB FAILED')
         logging.addLevelName(self.store.JOB_SUCCEEDED, 'JOB SUCCEEDED')
 
-        file_handler = logging.FileHandler(RELATIVE_LOGS_FOLDER / 'job_status.log')
+        file_handler = logging.FileHandler(settings.LOGS_FOLDER / 'job_status.log')
         file_handler.addFilter(JobFilter())  # Custom filter to only log job status data to file
         file_handler.setLevel(logging.INFO)
         file_handler.setFormatter(
             logging.Formatter('%(asctime)s - %(levelname)s - %(message)s \n'))
-        LOG.addHandler(file_handler)
+        settings.LOG.addHandler(file_handler)
 
     def loop(self):
         while True:
@@ -55,7 +56,7 @@ class FolderExecutor:
 
             # update store after run
             self.job_parser.run_discovery()
-            sleep(SLEEP_DURATION)
+            sleep(settings.SLEEP_DURATION)
 
     def parallel_job_runner(self, jobs: [Job]):
         number_of_threads = len(jobs)
@@ -69,7 +70,7 @@ class FolderExecutor:
             thread.start()
             threads.append(thread)
 
-        LOG.debug(f'Finished creating {number_of_threads} threads')
+        settings.LOG.debug(f'Finished creating {number_of_threads} threads')
 
     def execute_job(self, job: Job):
         """
@@ -79,7 +80,7 @@ class FolderExecutor:
         :param job:
         :return:
         """
-        LOG.debug(f'Trying to execute: {(job.script_path.absolute())}')
+        settings.LOG.debug(f'Trying to execute: {(job.script_path.absolute())}')
         feedback: subprocess.CompletedProcess = subprocess.run(
             [(job.script_path.absolute())],
             shell=True,
@@ -87,11 +88,11 @@ class FolderExecutor:
         )
         with self.store_lock:
             if feedback.returncode == 0:
-                LOG.debug(f'{job.relative_name} succeeded')
+                settings.LOG.debug(f'{job.relative_name} succeeded')
 
                 self.store.job_successful(job, feedback)
             else:
-                LOG.warning(f'{job.relative_name} failed...')
+                settings.LOG.warning(f'{job.relative_name} failed...')
                 self.store.job_failed(job, feedback)
 
 

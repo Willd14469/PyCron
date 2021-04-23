@@ -1,10 +1,11 @@
 import datetime
 from pathlib import Path
 
+from pycron import settings
 from pycron.interval.minutes import Minutes
 from pycron.jobs.jobs import InvalidJobException
 from pycron.persistance.pickle_persistence import MemStore
-from pycron.settings import LOG, CHECK_FOR_NEW_JOBS_EVERY
+# from pycron.settings import LOG, CHECK_FOR_NEW_JOBS_EVERY
 
 
 class JobFolderScanner:
@@ -21,7 +22,7 @@ class JobFolderScanner:
         self.store = store
 
         self.last_check = None
-        self.check_interval = Minutes(every=CHECK_FOR_NEW_JOBS_EVERY)
+        self.check_interval = Minutes(every=settings.CHECK_FOR_NEW_JOBS_EVERY)
 
     def scan_folder(self):
         """
@@ -62,12 +63,12 @@ class JobFolderScanner:
 
     def _check_for_jobs(self):
 
-        LOG.info(f'Checking for jobs changes...')
+        settings.LOG.info(f'Checking for jobs changes...')
         for path in self._collect_all_scripts():
             try:
                 self.store.fetch(path)
             except InvalidJobException as invalid_job_excp:
-                LOG.warning(f'Invalid Script {invalid_job_excp.args[0]}, reason: {invalid_job_excp.args[1]}')
+                settings.LOG.warning(f'Invalid Script {invalid_job_excp.args[0]}, reason: {invalid_job_excp.args[1]}')
 
     def run_discovery(self):
         """

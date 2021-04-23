@@ -4,12 +4,13 @@ from enum import Enum
 from pathlib import Path
 from uuid import uuid4
 
+from pycron import settings
 from pycron.interval.days import Days
 from pycron.interval.hours import Hours
 from pycron.interval.interval import Interval
 from pycron.interval.minutes import Minutes
 from pycron.interval.weeks import Weeks
-from pycron.settings import RELATIVE_JOB_FOLDER, JOB_FAIL_TIMEOUT_PERIOD_MINUTES
+# from pycron.settings import RELATIVE_JOB_FOLDER, JOB_FAIL_TIMEOUT_PERIOD_MINUTES
 
 
 class InvalidJobException(Exception):
@@ -70,7 +71,7 @@ class Job:
         # Absolute path to script
         self.script_path = script_path
         # Truncated path relative to job folder
-        self.relative_name = script_path.relative_to(RELATIVE_JOB_FOLDER)
+        self.relative_name = script_path.relative_to(settings.JOBS_FOLDER)
 
         self.job_uuid = uuid4()
 
@@ -106,7 +107,7 @@ class Job:
         :return: datetime
         """
         if self.failed_attempts > 0:
-            return self.last_failed_execution + timedelta(minutes=JOB_FAIL_TIMEOUT_PERIOD_MINUTES)
+            return self.last_failed_execution + timedelta(minutes=settings.JOB_FAIL_TIMEOUT_PERIOD_MINUTES)
 
         return self.interval.next_time(self.last_execution)
 
@@ -258,4 +259,4 @@ class Job:
         return self.__str__()
 
 
-test = Job(Path(r'C:\Coding\miniprojects\pycron\testing\1hour\at0050\test.bat'))
+# test = Job(Path(r'C:\Coding\miniprojects\pycron\testing\1hour\at0050\test.bat'))

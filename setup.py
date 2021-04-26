@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='pycron',
-    version='0.1.4',
+    version='0.1.6',
     packages=['pycron', 'pycron.executor', 'pycron.interval', 'pycron.job_discovery', 'pycron.persistance',
               'pycron.jobs'],
     url='',
@@ -14,5 +14,9 @@ setup(
         'rich'
     ],
     scripts=['bin/pycron'],
+    package_data={
+        # Include the default config.ini file in the package
+        "": ["config.ini"]
+    }
 
 )

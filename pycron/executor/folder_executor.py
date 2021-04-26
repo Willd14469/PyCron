@@ -11,6 +11,8 @@ from pycron import settings
 from pycron.job_discovery.folder_discovery import JobFolderScanner
 from pycron.jobs.jobs import Job
 from pycron.persistance.pickle_persistence import MemStore
+
+
 # from pycron.settings import LOG, SLEEP_DURATION, RELATIVE_LOGS_FOLDER, LOGGING_LEVEL
 
 
@@ -23,10 +25,10 @@ class FolderExecutor:
             Coordinates with the store and the job discovery as well
     """
 
-    def __init__(self, jobs_folder: Path, nuke_persistence):
+    def __init__(self, nuke_persistence):
 
         self.store = MemStore(nuke_persistence)
-        self.job_parser = JobFolderScanner(jobs_folder, self.store)
+        self.job_parser = JobFolderScanner(self.store)
 
         self.store_lock = Lock()
 

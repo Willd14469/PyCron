@@ -17,8 +17,8 @@ class JobFolderScanner:
     Checks persistant store to see if the job already exists in the store.
     """
 
-    def __init__(self, job_folder, store: MemStore):
-        self.job_folder: Path = job_folder
+    def __init__(self, store: MemStore):
+        self.job_folder: Path = settings.JOBS_FOLDER
         self.store = store
 
         self.last_check = None
@@ -38,7 +38,7 @@ class JobFolderScanner:
             elif item.is_file():
                 files.append(item)
             else:
-                LOG.warning(f'Unclassified item: {item}')
+                settings.LOG.warning(f'Unclassified item: {item}')
 
         return files, dirs
 
@@ -54,12 +54,6 @@ class JobFolderScanner:
                     files.append(file)
 
         return files
-
-    def script_hashes(self):
-        hashes = {}
-        for path in self._collect_all_scripts():
-            hashes[path] = self.store.fetch(path)
-        return hashes
 
     def _check_for_jobs(self):
 

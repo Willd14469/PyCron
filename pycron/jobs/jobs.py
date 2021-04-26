@@ -10,6 +10,8 @@ from pycron.interval.hours import Hours
 from pycron.interval.interval import Interval
 from pycron.interval.minutes import Minutes
 from pycron.interval.weeks import Weeks
+
+
 # from pycron.settings import RELATIVE_JOB_FOLDER, JOB_FAIL_TIMEOUT_PERIOD_MINUTES
 
 
@@ -181,7 +183,7 @@ class Job:
         The above structure would produce an interval of every 1 hour at half past
 
         """
-        regex_match = rf'at(?P<at>[0-2][0-3][0-5][0-9])\Z'
+        regex_match = rf'at(?P<at>[0-2][0-9][0-5][0-9])\Z'
 
         matches = re.match(regex_match, at_parameter)
 
@@ -245,18 +247,14 @@ class Job:
     def runtime(self):
         assert not self.locked, 'Cannot calculate runtime while job is running'
 
-        runtime:timedelta = self.unlocked_at - self.locked_at
+        runtime: timedelta = self.unlocked_at - self.locked_at
 
         secs = runtime.seconds
 
         return f'{secs // 3600} hours, {secs // 60} minutes, {secs % 60} seconds'
-
 
     def __str__(self):
         return str(self.relative_name)
 
     def __repr__(self):
         return self.__str__()
-
-
-# test = Job(Path(r'C:\Coding\miniprojects\pycron\testing\1hour\at0050\test.bat'))

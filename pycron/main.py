@@ -27,7 +27,7 @@ if __name__ == '__main__':
 
     if args['target']:
         absolute_path = relative_to_absolute(args['target'])
-        settings.set_job_folder(absolute_path)
+        settings.set_jobs_folder(absolute_path)
 
     if args['log_folder']:
         absolute_path = relative_to_absolute(args['log_folder'])

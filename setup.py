@@ -8,7 +8,7 @@ setup(
     url='',
     license='',
     author='Will Derriman',
-    author_email='',
+    author_email='will.derriman@lettusgrow.org',
     description='Cron inspired implementation of a job scheduler and executor',
     install_requires=[
         'rich'

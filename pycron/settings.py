@@ -17,21 +17,24 @@ class SettingsSingleton:
     """
 
     @staticmethod
-    def get_settings(ini_file: str = None):
+    def get_settings():
         global SETTINGS_OBJ
 
         if SETTINGS_OBJ:
             return SETTINGS_OBJ
 
-        settings = Settings(ini_file)
+        settings = _Settings()
         SETTINGS_OBJ = settings
         return SETTINGS_OBJ
 
 
-class Settings:
+class _Settings:
+    """
+    Do not import directly. Use singleton class to retrieve the single instance of settings
+    """
     default_ini = (Path(__file__).parent / 'config.ini').absolute()
 
-    def __init__(self, ini_file: str):
+    def __init__(self):
         # init logging
         self.LOG = logging.getLogger("main_log")
 
@@ -42,6 +45,8 @@ class Settings:
         self.LOGS_FOLDER = None
         self.PERSISTENCE_FILE = None
         self.LOG_LEVEL = None
+
+        self.loaded_file = None
 
         self.load_config_params(self.default_ini)
 
@@ -61,22 +66,24 @@ class Settings:
         self.JOB_FAIL_TIMEOUT_PERIOD_MINUTES = int(ini_parser['Timings'].get('JOB_FAIL_TIMEOUT_PERIOD_MINUTES', '2'))
 
         # read and write
-        self.JOBS_FOLDER = Path(ini_parser['Folders'].get('JOBS_FOLDER_DEFAULT', '/etc/pycron/jobs')).absolute()
+        self.JOBS_FOLDER = Path(ini_parser['Folders'].get('JOBS_FOLDER', '/etc/pycron/jobs')).absolute()
 
-        self.LOGS_FOLDER = Path(ini_parser['Folders'].get('LOGS_FOLDER_DEFAULT', '/etc/pycron/logs')).absolute()
+        self.LOGS_FOLDER = Path(ini_parser['Folders'].get('LOGS_FOLDER', '/etc/pycron/logs')).absolute()
 
         self.PERSISTENCE_FILE = Path(ini_parser['Folders'].get('PERSISTENCE_FILE', 'persistence.pickle')).absolute()
 
         self.LOG_LEVEL = ini_parser['Logging'].get('LOG_LEVEL', 'NOTSET')
 
+        self.loaded_file = ini_file
+
     def reload_config_from_file(self, file_path: str):
         ini_file = Path(file_path).absolute()
         assert ini_file.is_file(), f'{ini_file} does not exist'
-        print(f'Loaded config from file: {ini_file}')
 
+        print(f'Loaded config from file: {ini_file}')
         self.load_config_params(ini_file)
 
-    def set_job_folder(self, folder: str):
+    def set_jobs_folder(self, folder: str):
         job_path = Path(folder).absolute()
         assert job_path.is_dir(), f'{job_path} does not exist'
 

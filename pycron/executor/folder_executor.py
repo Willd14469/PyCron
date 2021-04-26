@@ -1,5 +1,6 @@
 import logging
 import subprocess
+from logging.handlers import TimedRotatingFileHandler
 from pathlib import Path
 from threading import Thread, Lock
 from time import sleep
@@ -39,9 +40,12 @@ class FolderExecutor:
         logging.addLevelName(self.store.JOB_FAILED, 'JOB FAILED')
         logging.addLevelName(self.store.JOB_SUCCEEDED, 'JOB SUCCEEDED')
 
-        file_handler = logging.FileHandler(settings.LOGS_FOLDER / 'job_status.log')
+        file_handler = TimedRotatingFileHandler(settings.LOGS_FOLDER / 'job_status.log',
+                                                when='H',
+                                                interval=24,
+                                                backupCount=30)
         file_handler.addFilter(JobFilter())  # Custom filter to only log job status data to file
-        file_handler.setLevel(logging.INFO)
+        file_handler.setLevel(settings.LOG_LEVEL)
         file_handler.setFormatter(
             logging.Formatter('%(asctime)s - %(levelname)s - %(message)s \n'))
         settings.LOG.addHandler(file_handler)

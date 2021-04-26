@@ -105,7 +105,7 @@ class MemStore:
 
         if nuke_persistence:
             settings.LOG.warning('Deleting persistence file, starting fresh')
-            settings.PERSISTENCE_FILE.unlink()  # Delete persistence file to start fresh
+            settings.PERSISTENCE_FILE.unlink(missing_ok=True)  # Delete persistence file to start fresh
 
         if not settings.PERSISTENCE_FILE.is_file():
             return {}

@@ -15,8 +15,10 @@ class TestFolderDiscovery(TestCase):
         # Change location of jobs folder before initializing the discoverer
         self.settings = settings = SettingsSingleton.get_settings()
         settings.set_jobs_folder(test_folder)
+        # Change persistence file location
+        settings.PERSISTENCE_FILE = test_folder / 'jar.pickle'
 
-        explorer = JobFolderScanner(MemStore())
+        explorer = JobFolderScanner(MemStore(nuke_persistence=True))
         self.explorer = explorer
 
         self.create_jobs()
@@ -49,7 +51,8 @@ class TestFolderDiscovery(TestCase):
     def test_correct_job_path(self):
         explorer = self.explorer
 
-        self.assertEqual(self.test_folder, explorer.job_folder, msg='Job folder in the explorer should match the test_folder')
+        self.assertEqual(self.test_folder, explorer.job_folder,
+                         msg='Job folder in the explorer should match the test_folder')
 
     def test_discovery(self):
 
@@ -62,7 +65,7 @@ class TestFolderDiscovery(TestCase):
         self.assertEqual(now, discovery_timestamp, msg='Discovery was not timestamped properly')
 
         # Test the correct number of jobs are discovered
-        self.assertEqual(4, len(self.explorer.store.store), msg='There should be exactly 4 valid jobs in jobs folder')
+        self.assertEqual(4, len(self.explorer.store.store), msg=f'There should be exactly 4 valid jobs in jobs folder. Actual jobs -> {self.explorer.store.store}')
 
         # Test the jobs with the correct index are created
         for job in self.explorer.store.store.keys():

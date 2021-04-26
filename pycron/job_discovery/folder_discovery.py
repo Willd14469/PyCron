@@ -60,6 +60,7 @@ class JobFolderScanner:
         settings.LOG.info(f'Checking for jobs changes...')
         for path in self._collect_all_scripts():
             try:
+                # Create record of job in store
                 self.store.fetch(path)
             except InvalidJobException as invalid_job_excp:
                 settings.LOG.warning(f'Invalid Script {invalid_job_excp.args[0]}, reason: {invalid_job_excp.args[1]}')
@@ -73,6 +74,3 @@ class JobFolderScanner:
         if now > self.check_interval.next_time(self.last_check) or self.last_check is None:
             self._check_for_jobs()
             self.last_check = now
-
-
-# testing = JobFolderScanner(RELATIVE_JOB_FOLER, MemStore())

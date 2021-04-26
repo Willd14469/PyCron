@@ -1,14 +1,14 @@
 import datetime
 from pathlib import Path
 from time import sleep
-from unittest import TestCase
+from unittest import TestCase, expectedFailure
 
 from pycron import SettingsSingleton
 from pycron.interval.days import Days
 from pycron.interval.hours import Hours
 from pycron.interval.minutes import Minutes
 from pycron.interval.weeks import Weeks
-from pycron.jobs.jobs import Job, JobRunReasons
+from pycron.jobs.jobs import Job, JobRunReasons, InvalidJobException
 
 
 class TestJobs(TestCase):
@@ -79,13 +79,13 @@ class TestJobs(TestCase):
         expected_runtime = f'{0} hours, {0} minutes, {2} seconds'
         self.assertEqual(runtime, expected_runtime)
 
-    def test_5min(self):
-        path = self.job_folder / '5min/hello.sh'
+    def test_15min(self):
+        path = self.job_folder / '15min/hello.sh'
 
         job = Job(path)
 
         self.assertIsInstance(job.interval, Minutes, msg='Type of interval does not match')
-        self.assertEqual(job.interval.every, 5, msg='Length of interval does not match')
+        self.assertEqual(job.interval.every, 15, msg='Length of interval does not match')
 
     def test_1hour(self):
         path = self.job_folder / '1hour/hello.sh'
@@ -123,7 +123,7 @@ class TestJobs(TestCase):
         self.assertEqual(job.interval.every, 2, msg='Length of interval does not match')
         self.assertEqual({'hour': '17', 'minute': '33'}, job.interval.at_data, msg='')
 
-    def test_2weekat2359(self):
+    def test_4weekat2359(self):
         path = self.job_folder / '4week/at2359/hello.sh'
 
         job = Job(path)
@@ -131,3 +131,22 @@ class TestJobs(TestCase):
         self.assertIsInstance(job.interval, Weeks, msg='Type of interval does not match')
         self.assertEqual(job.interval.every, 4, msg='Length of interval does not match')
         self.assertEqual({'hour': '23', 'minute': '59'}, job.interval.at_data, msg='')
+
+    def test_invalid_jobs(self):
+        invalid_paths = [
+            self.job_folder / '2week/at3000/hello.sh',
+            self.job_folder / '2week/at0069/hello.sh',
+            self.job_folder / 'hello.sh',
+            self.job_folder / '2week/at-0988/hello.sh',
+            self.job_folder / '2week/at30/hello.sh',
+            self.job_folder / '166mins/hello.sh',
+            self.job_folder / '2weeks/hello.sh',
+            self.job_folder / '2days/hello.sh',
+            self.job_folder / '1day',
+        ]
+
+        for job_path in invalid_paths:
+            with self.assertRaises(InvalidJobException, msg=f'{job_path} gets parsed correctly but should fail') as assertion_error:
+                job = Job(job_path)
+
+            print(f'{str(assertion_error.exception.args[0]):40} ==> {assertion_error.exception.args[1]}')

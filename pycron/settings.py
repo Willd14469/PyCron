@@ -7,29 +7,6 @@ from pathlib import Path
     All modular settings available to pycron
 """
 
-#
-# LOG = logging.getLogger("main_log")
-# LOGGING_LEVEL = 'NOTSET'
-#
-# SLEEP_DURATION = 1  # sleep duration between checking if a jobs needs to execute
-#
-# CHECK_FOR_NEW_JOBS_EVERY = 15  # check the jobs folder every x minutes
-#
-# JOB_FAIL_TIMEOUT_PERIOD_MINUTES = 5  # If a job fails, retry in x minutes
-#
-# JOBS_FOLDER_DEFAULT = '/etc/pycron/jobs'  # read and write
-# JOBS_FOLDER = os.environ.get('target', JOBS_FOLDER_DEFAULT)
-#
-# LOGS_FOLDER_DEFAULT = '/etc/pycron/logs'
-# LOGS_FOLDER = os.environ.get('logs_folder', LOGS_FOLDER_DEFAULT)
-#
-# PERSISTANCE_FILE = Path(__file__).parent.parent / 'persistance.pickle'
-#
-# EXECUTOR_JOB_MANIFEST = 'executor_manifest'  # must be read and writable
-#
-# RELATIVE_JOB_FOLDER = Path(JOBS_FOLDER).absolute()
-# RELATIVE_LOGS_FOLDER = Path(LOGS_FOLDER).absolute()
-
 SETTINGS_OBJ = None
 
 

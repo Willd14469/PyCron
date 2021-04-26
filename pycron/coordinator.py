@@ -16,7 +16,7 @@ class MainThread:
 
         self.param_validation()
 
-        self.executor: FolderExecutor = FolderExecutor(self.jobs_folder, nuke_persistence)
+        self.executor: FolderExecutor = FolderExecutor( nuke_persistence)
         self.main_log = settings.LOG
         self.startup_status()
 

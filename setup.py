@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='pycron',
-    version='0.1.0',
+    version='0.1.4',
     packages=['pycron', 'pycron.executor', 'pycron.interval', 'pycron.job_discovery', 'pycron.persistance',
               'pycron.jobs'],
     url='',
@@ -13,6 +13,6 @@ setup(
     install_requires=[
         'rich'
     ],
-    scripts=[],
+    scripts=['bin/pycron'],
 
 )

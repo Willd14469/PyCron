@@ -70,3 +70,4 @@ class TestFolderDiscovery(TestCase):
         # Test the jobs with the correct index are created
         for job in self.explorer.store.store.keys():
             self.assertIn(job, [x.absolute() for x in self.jobs])
+

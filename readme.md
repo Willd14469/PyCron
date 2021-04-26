@@ -66,6 +66,8 @@ PyCron comes with multiple methods of launching it.
 
 ### Default configuration 
 
+Copy the below configuration into a new `.ini` file and change the parameters. Then use `pycron -c my_config.ini` to launch with new config.
+
 ```ini
 [Timings]
 
@@ -87,3 +89,15 @@ PERSISTENCE_FILE = /etc/pycron/persistance.pickle
 [Logging]
 LOG_LEVEL = NOTSET
 ```
+
+# Logs
+
+PyCron provides 2 logs. The first one to stdout provides clear output of what is happening in the wider service. The second
+is a file log restricted to the status of jobs.
+
+**By default: `/etc/pycron/logs/job_status.log`**
+
+This log provides detailed information about the jobs such as _timestamps_, _stdout_,_stderr_ and _status code_. This file
+is automatically rotated every _24 hours_ and _30 days_ worth of history are kept.
+
+[comment]: <> (# Tests)

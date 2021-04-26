@@ -95,6 +95,7 @@ class Settings:
     def reload_config_from_file(self, file_path: str):
         ini_file = Path(file_path).absolute()
         assert ini_file.is_file(), f'{ini_file} does not exist'
+        print(f'Loaded config from file: {ini_file}')
 
         self.load_config_params(ini_file)
 
@@ -102,13 +103,13 @@ class Settings:
         job_path = Path(folder).absolute()
         assert job_path.is_dir(), f'{job_path} does not exist'
 
-        self.JOBS_FOLDER_DEFAULT = job_path
+        self.JOBS_FOLDER = job_path
 
     def set_logs_folder(self, folder: str):
         job_path = Path(folder).absolute()
         assert job_path.is_dir(), f'{job_path} does not exist'
 
-        self.LOGS_FOLDER_DEFAULT = job_path
+        self.LOGS_FOLDER = job_path
 
     def summaries_settings(self):
         params = vars(self)

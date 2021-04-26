@@ -36,7 +36,7 @@ if __name__ == '__main__':
     settings.summaries_settings()
 
     # try:
-    main_thread = MainThread(args['nuke'])
+    main_thread = MainThread(nuke_persistence=args['nuke'])
     main_thread.run()
     # except Exception as excp:
     #     LOG.exception(excp.args)

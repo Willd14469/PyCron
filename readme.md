@@ -63,6 +63,38 @@ PyCron comes with multiple methods of launching it.
 | `-t, --target`        | Override the jobs folder   | 
 | `-l, --log-folder`    | Override the logs folder   |
 
+## How to use
+
+Jobs are defined in a folder structure based approach. 
+
+```
+job_folder  |
+            |-> 5min    |
+                        |-> script_1.sh
+            |-> 1hour   |-> script_2.sh
+                        |-> at0030  |
+                                    |-> script_3.sh
+            |-> 3day    |
+                        |-> at0045  |
+                                    |-> script_4.sh
+                                    |-> script_5.sh
+            |-> 1week   |
+                        |-> script_6.sh
+
+```
+The above example file structure would result in the following:
+
+- `script_1.sh` runs every 5 minutes
+- `script_2.sh` runs every 1 hour
+- `script_3.sh` runs every 1 hour at half past
+- `script_4.sh & script_5.sh` both run every 3 days at 0045h
+- `script_6.sh` runs every 1 week
+
+The file structure follows the following rules:
+
+`job_folder/{0-9}*{min|hour|day|week}/script`
+
+`job_folder/{0-9}*{hour|day|week}/at{0-2}{0-9}{0-5}{0-9}/script`
 
 ### Default configuration 
 
@@ -71,7 +103,7 @@ Copy the below configuration into a new `.ini` file and change the parameters. T
 ```ini
 [Timings]
 
-# sleep duration between checking if a jobs needs to execute
+# sleep duration (in seconds) between checking if a jobs needs to execute
 SLEEP_DURATION = 1
 
 # check the jobs folder every x minutes

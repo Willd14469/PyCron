@@ -71,7 +71,8 @@ Jobs are defined in a folder structure based approach.
 job_folder  |
             |-> 5min    |
                         |-> script_1.sh
-            |-> 1hour   |-> script_2.sh
+            |-> 1hour   |
+                        |-> script_2.sh
                         |-> at0030  |
                                     |-> script_3.sh
             |-> 3day    |

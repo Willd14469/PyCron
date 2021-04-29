@@ -62,6 +62,7 @@ PyCron comes with multiple methods of launching it.
 | `-c`                  | Specify a `.ini` file to target as the config file    |
 | `-t, --target`        | Override the jobs folder   | 
 | `-l, --log-folder`    | Override the logs folder   |
+| `-p, --pickle-file`   | Override the pickle file   |
 
 ## How to use
 

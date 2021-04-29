@@ -95,6 +95,12 @@ class _Settings:
 
         self.LOGS_FOLDER = job_path
 
+    def set_persistence_file_location(self, file: str):
+        job_path = Path(file).absolute()
+        assert job_path.is_file(), f'{job_path} does not exist'
+
+        self.PERSISTENCE_FILE = job_path
+
     def summaries_settings(self):
         params = vars(self)
 

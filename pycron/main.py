@@ -18,6 +18,7 @@ if __name__ == '__main__':
     parser.add_argument('-t', '--target', action='store', help='Jobs folder to target')
     parser.add_argument('-l', '--log-folder', action='store', help='Log folder to target')
     parser.add_argument('-c', '--config-file', action='store', help='Config file to target')
+    parser.add_argument('-p', '--pickle-file', action='store', help='Location for the pickle file')
 
     args = vars(parser.parse_args())
     print(args)
@@ -32,6 +33,10 @@ if __name__ == '__main__':
     if args['log_folder']:
         absolute_path = relative_to_absolute(args['log_folder'])
         settings.set_logs_folder(absolute_path)
+
+    if args['pickle_file']:
+        absolute_path = relative_to_absolute(args['pickle_file'])
+        settings.set_persistence_file_location(absolute_path)
 
     settings.summaries_settings()
 

@@ -90,6 +90,22 @@ LOG_LEVEL = NOTSET""")
 
         self.assertRaises(AssertionError, settings.set_logs_folder, folder=self.dummy_folder)
 
+    def test_set_pickle_folder(self):
+        """
+        Tests set persistence file
+        """
+
+        settings = self.settings
+
+        test_file = self.test_folder / 'test.pickle'
+        test_file.touch()
+
+        settings.set_persistence_file_location(test_file.absolute())
+
+        self.assertEqual(test_file.absolute(), settings.PERSISTENCE_FILE)
+
+        test_file.unlink()
+
     def tearDown(self) -> None:
         # Delete test ini file
         self.test_ini.unlink()

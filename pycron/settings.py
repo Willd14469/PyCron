@@ -97,7 +97,7 @@ class _Settings:
 
     def set_persistence_file_location(self, file: str):
         job_path = Path(file).absolute()
-        assert job_path.is_file(), f'{job_path} does not exist'
+        assert job_path.parent.is_dir(), f'{job_path.parent} does not exist'
 
         self.PERSISTENCE_FILE = job_path
 

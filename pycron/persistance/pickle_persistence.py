@@ -2,7 +2,9 @@ import datetime
 import json
 import pickle
 import subprocess
+from pathlib import Path
 from threading import Thread
+from typing import List
 
 from pycron import settings
 from pycron.jobs.jobs import Job
@@ -35,8 +37,22 @@ class MemStore:
         self.store[script_path] = new_job
         return new_job
 
-    def delete_old_job(self, script_path):
-        ...
+    def check_for_non_existent_job(self, current_existing_scripts: List[Path]):
+        """
+        Purge any jobs that exist in the store but that have been removed from the script list.
+
+        Triggered by the discovery module.
+        :param current_existing_scripts: List of Paths that are currently in the job directory
+        """
+        stored_job_keys = self.store.keys()
+
+        removed_jobs = [x for x in stored_job_keys if x not in current_existing_scripts]
+
+        for job in removed_jobs:
+            settings.LOG.warning(f'{job} not longer exists in job dir, removing now...')
+            del self.store[job]
+
+        self.trigger_threaded_write()
 
     def runnable(self):
         now = datetime.datetime.now()
@@ -80,8 +96,9 @@ class MemStore:
     def next_runnable(self):
         """Debug feature to get the next runtime in minutes for each job"""
         now = datetime.datetime.now()
-        next_executions = [job.next_execution for job in self.store.values()]
-        return [(next_exe - now).seconds for next_exe in next_executions]
+        next_executions = {job.relative_name: f'{(job.next_execution - now).seconds}' for job in self.store.values()}
+        settings.LOG.debug(f'Next runtimes: {next_executions}')
+        # return [(next_exe - now).seconds for next_exe in next_executions]
 
     def trigger_threaded_write(self):
         """
@@ -97,11 +114,17 @@ class MemStore:
 
     @staticmethod
     def serialize_store(store):
+        """
+        Writes store to persistence layer
+        """
         with open(settings.PERSISTENCE_FILE, 'wb') as cache:
             pickle.dump(store, cache)
 
     @staticmethod
     def deserialize_store(nuke_persistence) -> dict:
+        """
+        Reads store from persistence layer
+        """
 
         if nuke_persistence:
             settings.LOG.warning('Deleting persistence file, starting fresh')

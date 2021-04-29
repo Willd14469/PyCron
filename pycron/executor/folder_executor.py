@@ -58,7 +58,8 @@ class FolderExecutor:
 
             self.parallel_job_runner(runnables)
 
-            print(self.store.next_runnable())
+            # Debug runtimes
+            self.store.next_runnable()
 
             # update store after run
             self.job_parser.run_discovery()
